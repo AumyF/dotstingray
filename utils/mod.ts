@@ -5,7 +5,7 @@ export const link = (
   { source, destination }: { source: string; destination: string },
 ): Descriptor => ({
   run: async () => {
-    await Deno.symlink(source, destination);
+    await Deno.symlink(await Deno.realPath(source), destination);
   },
   stat: async () => {
     let path: string;
