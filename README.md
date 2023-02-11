@@ -8,8 +8,8 @@ Define dotfiles declaratively using `defineTask`:
 
 ```ts
 // dotfiles.ts
-import { defineTask } from "../dotstingray/core/mod.ts";
-import { link } from "../dotstingray/utils/mod.ts";
+import { defineTask } from "https://deno.land/x/dotstingray@v0.1.1/core/mod.ts";
+import { link } from "https://deno.land/x/dotstingray@v0.1.1/utils/mod.ts";
 
 const home = Deno.env.get("HOME");
 
@@ -54,6 +54,6 @@ Alternatively, you may export `deploy` and use in other scripts.
 // run-deploy.ts
 import { deploy } from "./dotfiles.ts";
 
-deploy.run();
+await deploy.run();
 ```
 
