@@ -55,7 +55,20 @@ export const write = (
     }
   },
   stat: async () => {
-    if (await Deno.readFile(destination) === content) {
+    try {
+      await Deno.realPath(destination);
+    } catch (e) {
+      return { name: destination, ok: false, message: e.message };
+    }
+
+    let sourceContent;
+    if (content instanceof Uint8Array) {
+      sourceContent = await Deno.readFile(destination);
+    } else {
+      sourceContent = await Deno.readTextFile(destination);
+    }
+
+    if (sourceContent === content) {
       return { name: destination, ok: true };
     } else {
       return { name: destination, ok: false, message: "file differs" };
