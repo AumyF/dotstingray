@@ -1,3 +1,5 @@
+import { green, red } from "std/fmt/colors.ts";
+
 type Stat =
   & { name: string }
   & ({ ok: true; message?: undefined } | { ok: false; message: string });
@@ -20,9 +22,9 @@ export const use = (plugins: Plugin[]) => {
 
     for (const stat of stats) {
       if (stat.ok) {
-        console.log(`OK ${stat.name}`);
+        console.log(green(`OK ${stat.name}`));
       } else {
-        console.log(`KO ${stat.name}: ${stat.message}`);
+        console.log(red(`KO ${stat.name}: ${stat.message}`));
       }
     }
   };
