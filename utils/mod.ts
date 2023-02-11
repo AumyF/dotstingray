@@ -1,3 +1,5 @@
+import { ensureDir } from "std/fs/mod.ts";
+import { dirname } from "std/path/mod.ts";
 import { Action } from "../core/mod.ts";
 
 /** Given a `source` and a `destination`, returns `Action` which represents symbolic link from `source` to `destination`. */
@@ -5,6 +7,7 @@ export const link = (
   { source, destination }: { source: string; destination: string },
 ): Action => ({
   run: async () => {
+    await ensureDir(dirname(destination));
     await Deno.symlink(await Deno.realPath(source), destination);
   },
   stat: async () => {
@@ -44,6 +47,8 @@ export const write = (
   },
 ): Action => ({
   run: async () => {
+    await ensureDir(dirname(destination));
+
     if (content instanceof Uint8Array) {
       await Deno.writeFile(destination, content);
     } else {
