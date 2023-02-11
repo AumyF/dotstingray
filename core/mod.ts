@@ -1,16 +1,16 @@
 import { green, red } from "std/fmt/colors.ts";
 
-type Stat =
+export type Stat =
   & { name: string }
   & ({ ok: true; message?: undefined } | { ok: false; message: string });
 
-export type Descriptor = {
+export type Task = {
   /** A function to set the environment up. As its return type `Promise<void>` suggests, it may include side effects such as software installation or filesystem write. */
   run: () => Promise<void>;
   /** Checks whether the environment is set up correctly. It should not have any implicit outputs. */
   stat: () => Promise<Stat>;
 };
-export type Plugin = () => Promise<Descriptor[]> | Descriptor[];
+export type Plugin = () => Promise<Task[]> | Task[];
 
 export const use = (plugins: Plugin[]) => {
   const callPlugin = () =>
