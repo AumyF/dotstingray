@@ -1,9 +1,9 @@
-import { Task } from "../core/mod.ts";
+import { Action } from "../core/mod.ts";
 
-/** Given a `source` and a `destination`, returns `Task` which represents symbolic link from `source` to `destination`. */
+/** Given a `source` and a `destination`, returns `Action` which represents symbolic link from `source` to `destination`. */
 export const link = (
   { source, destination }: { source: string; destination: string },
-): Task => ({
+): Action => ({
   run: async () => {
     await Deno.symlink(await Deno.realPath(source), destination);
   },
@@ -35,14 +35,14 @@ export const link = (
   },
 });
 
-/** Given a `content` and a `destination`, returns `Task` which represents writing `content` to `destination`.
+/** Given a `content` and a `destination`, returns `Action` which represents writing `content` to `destination`.
  */
 export const write = (
   { content, destination }: {
     content: Uint8Array | string;
     destination: string;
   },
-): Task => ({
+): Action => ({
   run: async () => {
     if (content instanceof Uint8Array) {
       await Deno.writeFile(destination, content);
