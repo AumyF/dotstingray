@@ -39,10 +39,10 @@ export const use = (plugins: Plugin[]) => {
       try {
         await run();
       } catch (e) {
-        console.log(`KO ${statResult.name}: ${e?.message}`);
+        console.log(red(`KO ${statResult.name}: ${e?.message}`));
         continue;
       }
-      console.log(`OK ${statResult.name}`);
+      console.log(green(`OK ${statResult.name}`));
     }
   };
 
