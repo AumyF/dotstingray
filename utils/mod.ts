@@ -1,5 +1,4 @@
-import { ensureDir } from "std/fs/mod.ts";
-import { dirname } from "std/path/mod.ts";
+import { dirname, ensureDir } from "./deps.ts";
 import { Action } from "../core/mod.ts";
 
 /** Given a `source` and a `destination`, returns `Action` which represents symbolic link from `source` to `destination`. */

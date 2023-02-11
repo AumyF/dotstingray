@@ -1,4 +1,4 @@
-import { green, red } from "std/fmt/colors.ts";
+import { green, red } from "./deps.ts";
 
 export type Stat =
   & { name: string }
