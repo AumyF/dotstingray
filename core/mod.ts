@@ -29,7 +29,7 @@ export const defineTask = (actions: Action[]) => {
     for (const { stat, run } of actions) {
       const statResult = await stat();
 
-      if (statResult.ok) return;
+      if (statResult.ok) continue;
 
       try {
         await run();
