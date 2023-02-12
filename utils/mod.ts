@@ -9,7 +9,7 @@ export const link = (
     await ensureDir(dirname(destination));
     await Deno.symlink(await Deno.realPath(source), destination);
   },
-  stat: async () => {
+  check: async () => {
     let path: string;
 
     try {
@@ -54,7 +54,7 @@ export const write = (
       await Deno.writeTextFile(destination, content);
     }
   },
-  stat: async () => {
+  check: async () => {
     try {
       await Deno.realPath(destination);
     } catch (e) {
