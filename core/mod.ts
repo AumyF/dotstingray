@@ -81,3 +81,15 @@ export const prettyResult = (result: Result, { color = true } = {}) => {
 
   return color ? paint(msg) : msg;
 };
+
+export const prettyRunResult = (
+  result: RunResult,
+  opt: { color?: boolean } = {},
+) => {
+  const checkMsg = prettyResult(result.check, opt);
+  const msg = result.check.ok
+    ? checkMsg
+    : prettyResult(result.run as Result, opt);
+
+  return msg;
+};
