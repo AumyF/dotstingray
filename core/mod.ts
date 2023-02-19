@@ -1,45 +1,83 @@
 import { green, red } from "./deps.ts";
 
-export type Stat =
-  & { name: string }
-  & ({ ok: true; message?: undefined } | { ok: false; message: string });
+export type ResultOk = { name: string; ok: true; message?: undefined };
+export type ResultKo = {
+  name: string;
+  ok: false;
+  message: string;
+};
+export type Result = ResultOk | ResultKo;
 
-export type Action = {
-  /** A function to set the environment up. As its return type `Promise<void>` suggests, it may include side effects such as software installation or filesystem write. */
-  run: () => Promise<void>;
-  /** Checks whether the environment is set up correctly. It should not have any implicit outputs. */
-  stat: () => Promise<Stat>;
+export type RunResult = { check: ResultOk; run?: undefined } | {
+  check: ResultKo;
+  run: Result;
 };
 
-export type Task = { stat: () => Promise<void>; run: () => Promise<void> };
+export type Action = {
+  /** A function to set the environment up. As its return type `Promise<void>` suggests,
+  it may include side effects such as software installation or filesystem write.
+  You can throw exceptions to indicate that the action has failed.
+   */
+  run: () => Promise<void>;
+  /** Checks whether the environment is set up correctly.
+  It should not have any implicit outputs (e.g. Assignment to variables in outer scope, writing to filesystem or making HTTP POST requests).
+  Renamed from `stat` in v0.2. */
+  check: () => Promise<Result>;
+};
+
+export type Task = {
+  check: () => Promise<Result[]>;
+  run: () => Promise<RunResult[]>;
+};
 
 export const defineTask = (actions: Action[]) => {
-  const printStat = async () => {
-    for (const { stat } of actions) {
-      const statResult = await stat();
-      if (statResult.ok) {
-        console.log(green(`OK ${statResult.name}`));
-      } else {
-        console.log(red(`KO ${statResult.name}: ${statResult.message}`));
-      }
+  const executeCheck: Task["check"] = async () => {
+    const result = [];
+
+    for (const { check } of actions) {
+      result.push(await check());
     }
+
+    return result;
   };
 
-  const executeRun = async () => {
-    for (const { stat, run } of actions) {
-      const statResult = await stat();
+  const executeRun: Task["run"] = async () => {
+    const result: RunResult[] = [];
+    for (const { check, run } of actions) {
+      const checkResult = await check();
 
-      if (statResult.ok) continue;
+      if (checkResult.ok) {
+        result.push({ check: checkResult });
+        continue;
+      }
 
       try {
         await run();
       } catch (e) {
-        console.log(red(`KO ${statResult.name}: ${e?.message}`));
+        result.push({
+          check: checkResult,
+          run: { ok: false, name: checkResult.name, message: e?.message },
+        });
         continue;
       }
-      console.log(green(`OK ${statResult.name}`));
+
+      result.push({
+        check: checkResult,
+        run: { ok: true, name: checkResult.name },
+      });
     }
+
+    return result;
   };
 
-  return { stat: printStat, run: executeRun };
+  return { check: executeCheck, run: executeRun };
+};
+
+/** Stringifies an `ActionResult` in human-readable format. */
+export const prettyResult = (result: Result, { color = true } = {}) => {
+  const [msg, paint] = result.ok
+    ? [`OK ${result.name}`, green]
+    : [`KO ${result.name}: ${result.message}`, red];
+
+  return color ? paint(msg) : msg;
 };
