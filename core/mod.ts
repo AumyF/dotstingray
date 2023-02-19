@@ -89,7 +89,8 @@ export const prettyRunResult = (
   const checkMsg = prettyResult(result.check, opt);
   const msg = result.check.ok
     ? checkMsg
-    : prettyResult(result.run as Result, opt);
+    : `${prettyResult(result.run as Result, opt)}
+  ${checkMsg}`;
 
   return msg;
 };
